@@ -6,6 +6,7 @@ import domain.repository.WalletRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,11 +40,42 @@ public class WalletRepoImpl implements WalletRepository {
 
     @Override
     public Optional<Wallet> findById(UUID uuid) {
+        String sql = "SELECT id, balance, type, address, created_at FROM wallet WHERE address = ?";
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if(rs.next()) {
+                    Wallet wallet = new Wallet();
+                    wallet.setId(rs.getLong("id"));
+                    wallet.setBalance(rs.getBigDecimal("balance"));
+                    wallet.setType(wallet.getType());
+                    wallet.setAddress(rs.getString("address"));
+                    wallet.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+                    return Optional.of(wallet);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error finding wallet by id", e);
+        }
         return Optional.empty();
     }
 
     @Override
     public boolean isAddressExist(String address) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM wallet WHERE address = ?)";
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setString(1, address);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if(rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error checking wallet address existence", e);
+        }
         return false;
     }
 }
