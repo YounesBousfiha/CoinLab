@@ -39,10 +39,10 @@ public class WalletRepoImpl implements WalletRepository {
     }
 
     @Override
-    public Optional<Wallet> findById(UUID uuid) {
+    public Optional<Wallet> findByAddress(String address) {
         String sql = "SELECT id, balance, type, address, created_at FROM wallet WHERE address = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
+            stmt.setString(1, address);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if(rs.next()) {
