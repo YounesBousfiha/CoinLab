@@ -23,7 +23,7 @@ public class Database {
     }
 
 
-    public static Database getInstance() throws SQLException {
+    public static synchronized Database getInstance() throws SQLException {
         try {
             if(instance == null || instance.getConnection().isClosed()) {
                 instance = new Database();
