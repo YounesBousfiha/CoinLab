@@ -13,9 +13,9 @@ public class Database {
 
     private Database() throws SQLException {
         try {
-            String url = "jdbc:postgresql://localhost:5432/coinlab";
-            String user = "younes";
-            String password = "test123";
+            String url = GlobalValue.DB_URL;
+            String user = GlobalValue.DB_USER;
+            String password = GlobalValue.PASSWORD;
             this.connection = DriverManager.getConnection(url, user, password);
         }  catch (SQLException e) {
             throw new SQLException("could connect to Database : ", e);
