@@ -5,7 +5,7 @@ import domain.entity.Wallet;
 
 public class WalletService {
 
-    public void saveTransaction(Wallet wallet, Transaction tx) {
+    public void saveTransaction(Wallet wallet, Transaction tx) throws IllegalAccessException {
         wallet.saveTransaction(tx);
     }
 }

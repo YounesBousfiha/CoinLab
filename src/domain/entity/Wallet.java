@@ -83,7 +83,10 @@ public class Wallet {
         this.transactionList = transactionList;
     }
 
-    public void saveTransaction(Transaction transaction) {
+    public void saveTransaction(Transaction transaction) throws IllegalAccessException {
+        if(this.transactionList == null) {
+            throw  new IllegalAccessException("Transaction list has not been initialized.");
+        }
         transactionList.add(transaction);
     }
 
