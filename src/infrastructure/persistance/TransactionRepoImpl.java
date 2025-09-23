@@ -1,7 +1,7 @@
 package infrastructure.persistance;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import com.sun.org.slf4j.internal.Logger; /* Verify if this Works */
+import com.sun.org.slf4j.internal.LoggerFactory; /* Verify if this Works */
 import domain.entity.Transaction;
 import domain.enums.Priority;
 import domain.enums.Status;
@@ -85,7 +85,7 @@ public class TransactionRepoImpl implements TransactionRepository {
 
     @Override
     public int countPending() {
-        String sql = " SELECT COUNT(*) FROM transaction WHERE status = 'PENDING";
+        String sql = " SELECT COUNT(*) FROM transaction WHERE status = 'PENDING'";
 
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
