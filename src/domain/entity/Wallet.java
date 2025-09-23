@@ -83,7 +83,7 @@ public class Wallet {
         this.transactionList = transactionList;
     }
 
-    public void addTrasanction(Transaction transaction) {
+    public void saveTransaction(Transaction transaction) {
         transactionList.add(transaction);
     }
 
