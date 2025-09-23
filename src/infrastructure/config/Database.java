@@ -18,7 +18,7 @@ public class Database {
             String password = GlobalValue.PASSWORD;
             this.connection = DriverManager.getConnection(url, user, password);
         }  catch (SQLException e) {
-            throw new SQLException("could connect to Database : ", e);
+            throw new SQLException("couldn't connect to Database : ", e);
         }
     }
 
