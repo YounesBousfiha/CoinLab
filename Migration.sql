@@ -38,9 +38,7 @@ CREATE TABLE transaction (
     fee DECIMAL(20, 8) NOT NULL DEFAULT 0.0,
     priority transaction_priority NOT NULL,
     status transaction_status NOT NULL DEFAULT 'PENDING',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    wallet_id INTEGER,
-    FOREIGN KEY (wallet_id) REFERENCES wallet(id) ON DELETE SET NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TYPE log_level AS ENUM (
