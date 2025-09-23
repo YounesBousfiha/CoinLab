@@ -1,25 +1,37 @@
 package presentation;
 
+import domain.repository.WalletAddressGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import presentation.controller.TransactionController;
 import presentation.controller.WalletController;
-
+import infrastructure.strategy.BtcAddressGenerator;
+import infrastructure.strategy.EthAddressGenerator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+
 
 public class ConsoleUI {
 
     private final Logger logger = LoggerFactory.getLogger(ConsoleUI.class);
+
     private final WalletController walletController;
     private final TransactionController transactionController;
+
     private final Scanner scanner = new Scanner(System.in);
+
+    Map<String, WalletAddressGenerator> strategies = new HashMap<>();
 
     public ConsoleUI(WalletController walletController, TransactionController transactionController) {
         this.walletController = walletController;
         this.transactionController = transactionController;
+
+        strategies.put("BTC", new BtcAddressGenerator());
+        strategies.put("ETH", new EthAddressGenerator());
     }
 
-    public void start() {
+    public void start() throws IllegalAccessException {
         int choice;
         do {
             welcomeMenu();
@@ -42,8 +54,11 @@ public class ConsoleUI {
                 case 5:
                     checkMempool();
                     break;
+                case 0:
+                    System.out.println("Bye Bye ...");
+                    break;
                 default:
-                    logger.warn("Invalid Choice !");
+                    System.out.println("Invalid Choice !");
             }
 
         } while (0 != choice);
@@ -56,11 +71,22 @@ public class ConsoleUI {
         System.out.println("3: Check my Position in memPool");
         System.out.println("4: Compare fees Levels");
         System.out.println("5: Check mempool stat");
+        System.out.println("0: quit");
     }
 
-    private void createWallet() {
-        // TODO: Choose Wallet Type
-        // TODO: Automatically Generate the Crypto Address Unique
+    private void createWallet() throws IllegalAccessException {
+        System.out.print("Choose Wallet type e.g: BTC, ETH");
+        String type = scanner.nextLine();
+        WalletAddressGenerator generator = strategies.get(type);
+
+        if(null == generator) {
+            logger.error("Address generator  is Null");
+            return;
+        }
+
+        String address = generator.generate(type);
+
+        System.out.println(address);
         // TODO: Wallet will have a zero solde
         // TODO: give a wallet a unique ID ( for the db I think )
         // TODO: Check the Status From the ResponseController
@@ -94,7 +120,5 @@ public class ConsoleUI {
         // TODO: display the feed for Each Transaction also
         // TODO: Mention my Trasaction as display  ">>> Your TX : Wallet Address"
     }
-
-
 
 }
