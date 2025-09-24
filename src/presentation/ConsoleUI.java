@@ -10,6 +10,7 @@ import presentation.controller.WalletController;
 import infrastructure.strategy.BtcAddressGenerator;
 import infrastructure.strategy.EthAddressGenerator;
 import presentation.response.WalletCreationResponse;
+import presentation.util.ConsoleInputReader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +24,14 @@ public class ConsoleUI {
     private final WalletController walletController;
     private final TransactionController transactionController;
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final ConsoleInputReader inputReader;
 
     Map<String, WalletAddressGenerator> strategies = new HashMap<>();
 
     public ConsoleUI(WalletController walletController, TransactionController transactionController) {
         this.walletController = walletController;
         this.transactionController = transactionController;
+        this.inputReader = new ConsoleInputReader();
 
         strategies.put("BITCOIN", new BtcAddressGenerator());
         strategies.put("ETHEREUM", new EthAddressGenerator());
@@ -39,8 +41,7 @@ public class ConsoleUI {
         int choice;
         do {
             welcomeMenu();
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            choice = inputReader.getIntInput("Enter your choice: ");
 
             switch (choice) {
                 case 1:
@@ -79,8 +80,7 @@ public class ConsoleUI {
     }
 
     private void createWallet() throws IllegalAccessException {
-        System.out.print("Choose Wallet type e.g: BTC, ETH : ");
-        String type = scanner.nextLine();
+        String type = inputReader.getInput("Choose Wallet type e.g: BTC, ETH : ");
         WalletAddressGenerator generator = strategies.get(type.toUpperCase());
 
         if(null == generator) {
@@ -104,11 +104,22 @@ public class ConsoleUI {
     }
 
     private void makeTransaction() {
-        // TODO: Source Address, Destination Address, Montant
-        // TODO: choose the fees level ( ECONOMIQUE, STANDARD, RAPIDE )
-        // TODO: Calculate the Fess based on the Cyrpto Type & the priorité
-        // TODO: Create a trasanction with PENDING status
-        // TODO: Give a UUID to this Transaction
+        // get the source(sender) address & destination(receiver) address
+        // Check if both Addresses exist,
+        // choose the level of the transaction (ECONOMIQUE, STANDARD, RAPID)
+        // based on the level Calculate the fees & set the Priority
+        // Call the Transaction Create controller Method
+        // receive a TransactionCreateResponse object
+
+        // service
+
+        //  receive the args from controller
+        // Transfer those args to DTO
+        // generate a UUID
+        // call the Transaction repository for the save
+        // call domain-service for both sender and receiver for consistency
+        // return database Resultset
+        // Map it to DTO again and return it back to controller
     }
 
     private void myPositionInMemPool() {
@@ -131,5 +142,4 @@ public class ConsoleUI {
         // TODO: display the feed for Each Transaction also
         // TODO: Mention my Trasaction as display  ">>> Your TX : Wallet Address"
     }
-
 }
