@@ -1,7 +1,6 @@
 package presentation.response;
 
 import application.dto.WalletDTO;
-import domain.entity.Wallet;
 
 public class WalletCreationResponse {
     private boolean success;
@@ -29,16 +28,16 @@ public class WalletCreationResponse {
         return this.success;
     }
 
-    public WalletDTO getWallet() throws IllegalAccessException {
+    public WalletDTO getWallet() throws IllegalStateException {
         if(!success) {
-            throw new IllegalAccessException("Wallet is not available for unsuccessful creation");
+            throw new IllegalStateException("Wallet is not available for unsuccessful creation");
         }
         return walletDTO;
     }
 
-    public String getErrorMessage() throws IllegalAccessException {
+    public String getErrorMessage() throws IllegalStateException {
         if(success) {
-            throw new IllegalAccessException("Error message is not available for successful creation");
+            throw new IllegalStateException("Error message is not available for successful creation");
         }
         return errorMessage;
     }
