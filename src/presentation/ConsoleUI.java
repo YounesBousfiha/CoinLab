@@ -81,7 +81,7 @@ public class ConsoleUI {
     private void createWallet() throws IllegalAccessException {
         System.out.print("Choose Wallet type e.g: BTC, ETH : ");
         String type = scanner.nextLine();
-        WalletAddressGenerator generator = strategies.get(type);
+        WalletAddressGenerator generator = strategies.get(type.toUpperCase());
 
         if(null == generator) {
             logger.error("Address generator  is Null");
