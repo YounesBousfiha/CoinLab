@@ -5,27 +5,22 @@ import domain.enums.CryptoType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public class Wallet {
     private Long id;
-    private UUID uuid;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
     private CryptoType type;
-    private String address; /*  Generate automatically  */
+    private String address;
     private LocalDateTime createdAt;
     private List<Transaction> transactionList;
 
 
-    public Wallet(UUID uuid, BigDecimal balance, CryptoType type) {
-        this.uuid = uuid;
-        this.balance = balance;
+    public Wallet(CryptoType type, String address) {
         this.type = type;
+        this.address = address;
     }
 
-    public Wallet() {
-
-    }
+    public Wallet() {}
 
     public Long getId() {
         return id;
@@ -33,14 +28,6 @@ public class Wallet {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UUID getUuid(){
-        return this.uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 
     public BigDecimal getBalance() {

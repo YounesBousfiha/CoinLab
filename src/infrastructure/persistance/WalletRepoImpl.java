@@ -2,6 +2,7 @@ package infrastructure.persistance;
 
 
 import domain.entity.Wallet;
+import domain.enums.CryptoType;
 import domain.repository.WalletRepository;
 
 import java.sql.Connection;
@@ -9,10 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.UUID;
 
-import com.sun.org.slf4j.internal.Logger; /* Verify if this Works */
-import com.sun.org.slf4j.internal.LoggerFactory; /* Verify if this Works */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WalletRepoImpl implements WalletRepository {
     private static final Logger logger = LoggerFactory.getLogger(WalletRepoImpl.class);
@@ -24,18 +24,27 @@ public class WalletRepoImpl implements WalletRepository {
     }
 
     @Override
-    public void save(Wallet wallet) {
-        String sql = "INSERT INTO wallet (uuid, balance, wallet_type, address) VALUES (?, ?, ?, ?)";
+    public Wallet save(Wallet wallet) {
+        String sql = "INSERT INTO wallet (balance, type, address) VALUES (?, ?::wallet_type, ?) RETURNING id, created_at, type, address, balance";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setObject(1, wallet.getUuid());
-            stmt.setBigDecimal(2, wallet.getBalance());
-            stmt.setString(3, wallet.getType().name());
-            stmt.setString(4, wallet.getAddress());
+            stmt.setBigDecimal(1, wallet.getBalance());
+            stmt.setString(2, wallet.getType().name());
+            stmt.setString(3, wallet.getAddress());
 
-            stmt.executeUpdate();
+           try ( ResultSet rs = stmt.executeQuery()) {
+                if(rs.next()) {
+                     wallet.setId(rs.getLong("id"));
+                     wallet.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                     wallet.setType(CryptoType.valueOf(rs.getString("type")));
+                     wallet.setAddress(rs.getString("address"));
+                     wallet.setBalance(rs.getBigDecimal("balance"));
+                }
+           }
         } catch (SQLException e) {
             logger.error("Error saving wallet : {}", wallet.getAddress(), e);
         }
+
+        return wallet;
     }
 
     @Override
@@ -57,7 +66,7 @@ public class WalletRepoImpl implements WalletRepository {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Error finding wallet by id", e);
+            //logger.error("Error finding wallet by id", e);
         }
         return Optional.empty();
     }
@@ -74,7 +83,7 @@ public class WalletRepoImpl implements WalletRepository {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Error checking wallet address existence", e);
+            //logger.error("Error checking wallet address existence", e);
         }
         return false;
     }
