@@ -1,7 +1,5 @@
 package application.dto;
 
-import domain.enums.CryptoType;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -10,10 +8,12 @@ public class WalletDTO {
     private BigDecimal balance;
     private String type;
     private String address;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
 
-    public WalletDTO() {}
+    public WalletDTO() {
+        /* Empty */
+    }
 
 
     public Long getId() {
