@@ -1,6 +1,7 @@
 package infrastructure.strategy;
 
 import domain.entity.Transaction;
+import domain.repository.FeeCalculationStrategy;
 
 public class EthereumFeeStrategy implements FeeCalculationStrategy {
 

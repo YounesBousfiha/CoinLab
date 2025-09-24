@@ -1,4 +1,4 @@
-package infrastructure.strategy;
+package domain.repository;
 
 import domain.entity.Transaction;
 
