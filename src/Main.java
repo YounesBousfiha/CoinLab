@@ -20,16 +20,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalAccessException {
             CoinLab app = new CoinLab();
             app.start();
     }
 }
 
 class CoinLab {
-    public void start() {
+    public void start() throws IllegalAccessException {
         ApplicationContext  context = ApplicationContext.create();
         ConsoleUI ui = context.getBean(ConsoleUI.class);
+        ui.start();
     }
 }
 
