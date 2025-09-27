@@ -1,11 +1,13 @@
 package domain.repository;
 
 import domain.entity.Wallet;
+import domain.enums.CryptoType;
+
 import java.util.Optional;
 
 public interface WalletRepository {
 
-    public Wallet save(Wallet wallet);
-    public Optional<Wallet> findByAddress(String address);
-    public boolean isAddressExist(String address);
+     Wallet save(Wallet wallet);
+     Optional<Wallet> findByAddress(String address);
+     boolean isAddressExist(String address);
 }

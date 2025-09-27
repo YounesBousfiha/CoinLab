@@ -1,8 +1,3 @@
-CREATE DATABASE coinlab;
-
-\connect coinlab;
-
-
 CREATE TYPE wallet_type AS ENUM (
         'BITCOIN',
         'ETHEREUM'
@@ -32,6 +27,7 @@ CREATE TABLE wallet (
 
 CREATE TABLE transaction (
     id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
     source VARCHAR(255) NOT NULL,
     destination VARCHAR(255) NOT NULL,
     amount  DECIMAL(20, 8) NOT NULL,

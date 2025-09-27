@@ -5,20 +5,23 @@ import domain.enums.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Transaction {
 
-    private final Long id;
-    private final String source;
-    private final String destination;
-    private final BigDecimal amount;
-    private final BigDecimal fee;
-    private final Priority priority;
-    private final Status status;
-    private final LocalDateTime createdAt;
+    private Long id;
+    private UUID uuid;
+    private String source;
+    private String destination;
+    private BigDecimal amount;
+    private BigDecimal fee;
+    private Priority priority;
+    private Status status;
+    private LocalDateTime createdAt;
 
     private Transaction(Builder builder) {
         this.id = builder.id;
+        this.uuid = builder.uuid;
         this.source = builder.source;
         this.destination = builder.destination;
         this.amount = builder.amount;
@@ -35,6 +38,7 @@ public class Transaction {
 
     public static class Builder {
         private Long id;
+        private UUID uuid;
         private String source;
         private String destination;
         private BigDecimal amount;
@@ -45,6 +49,11 @@ public class Transaction {
 
         public Builder id(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder uuid(UUID uuid) {
+            this.uuid = uuid;
             return this;
         }
 
@@ -94,6 +103,7 @@ public class Transaction {
         return this.id;
     }
 
+    public UUID getUuid() { return this.uuid; }
     public String getSource() {
         return this.source;
     }
@@ -120,5 +130,21 @@ public class Transaction {
 
     public LocalDateTime getCreatedAt() {
         return this.createdAt;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", source='" + source + '\'' +
+                ", destination='" + destination + '\'' +
+                ", amount=" + amount +
+                ", fee=" + fee +
+                ", priority=" + priority +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }
