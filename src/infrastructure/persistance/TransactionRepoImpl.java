@@ -247,7 +247,7 @@ public class TransactionRepoImpl implements TransactionRepository {
                     ? Optional.empty()
                     : Optional.of(feeLevelStats);
         } catch (SQLException e) {
-            logger.error("Error: Couldn't get Fee Level Statisctics: {}", e);
+            logger.error("Error: Couldn't get Fee Level Statistics: {}", e);
             return Optional.empty();
         }
     }
