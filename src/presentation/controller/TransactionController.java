@@ -21,7 +21,7 @@ public class TransactionController {
 
             return TransactionCreateResponse.success(transactionDTO);
         } catch (Exception e) {
-            return TransactionCreateResponse.failure("Failed to Create walle " + e.getMessage());
+            return TransactionCreateResponse.failure("Failed to Create wallet " + e.getMessage());
         }
 
     }
