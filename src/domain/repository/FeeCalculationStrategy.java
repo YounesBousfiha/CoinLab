@@ -1,7 +1,10 @@
 package domain.repository;
 
-import domain.entity.Transaction;
+import domain.enums.Priority;
+
+import java.math.BigDecimal;
 
 public interface FeeCalculationStrategy {
-        double calculateFee(Transaction tx);
+        BigDecimal calculateFee(BigDecimal amount, Priority priority);
+
 }
