@@ -77,4 +77,16 @@ public class Wallet {
         transactionList.add(transaction);
     }
 
+    @Override
+    public String toString() {
+        return "Wallet{" +
+                "id=" + id +
+                ", balance=" + balance +
+                ", type=" + type +
+                ", address='" + address + '\'' +
+                ", createdAt=" + createdAt +
+                ", transactionList=" + transactionList +
+                '}';
+    }
+
 }
