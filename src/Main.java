@@ -1,16 +1,16 @@
+import application.service.MemPoolService;
 import application.service.TransactionService;
 import application.service.WalletService;
+import domain.repository.MempoolRepository;
 import domain.repository.TransactionRepository;
 import domain.repository.WalletRepository;
 import infrastructure.config.Database;
 import infrastructure.config.GlobalValue;
-import infrastructure.persistance.TransactionMemRepoImpl;
-import infrastructure.persistance.TransactionRepoImpl;
-import infrastructure.persistance.WalletMemRepoImpl;
-import infrastructure.persistance.WalletRepoImpl;
+import infrastructure.persistance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import presentation.ConsoleUI;
+import presentation.controller.MempoolController;
 import presentation.controller.TransactionController;
 import presentation.controller.WalletController;
 
@@ -62,15 +62,18 @@ class ApplicationContext {
     private static ConsoleUI getConsoleUI(boolean useDatabase, Connection db) {
         WalletRepository walletRepository =  useDatabase ? new WalletRepoImpl(db) : new WalletMemRepoImpl();
         TransactionRepository transactionRepository = useDatabase ? new TransactionRepoImpl(db) : new TransactionMemRepoImpl();
+        MempoolRepository mempoolRepository = useDatabase ? new MemPoolImpl(db) : new MemPoolMemoImpl();
+        MemPoolService memPoolService = new MemPoolService(transactionRepository, walletRepository);
 
 
         WalletService walletService = new WalletService(walletRepository);
-        TransactionService transactionService = new TransactionService(transactionRepository);
+        TransactionService transactionService = new TransactionService(transactionRepository, walletRepository, mempoolRepository);
 
         WalletController walletController = new WalletController(walletService);
         TransactionController transactionController = new TransactionController(transactionService);
+        MempoolController mempoolController = new MempoolController(memPoolService);
 
-        return new ConsoleUI(walletController, transactionController);
+        return new ConsoleUI(walletController, transactionController, mempoolController);
     }
 
     @SuppressWarnings("unchecked")
