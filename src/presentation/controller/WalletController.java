@@ -2,8 +2,6 @@ package presentation.controller;
 
 import application.dto.WalletDTO;
 import application.service.WalletService;
-import domain.entity.Wallet;
-import domain.enums.CryptoType;
 import presentation.response.WalletCreationResponse;
 
 public class WalletController {
