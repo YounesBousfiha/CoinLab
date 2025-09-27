@@ -1,21 +1,25 @@
 package presentation;
 
+import application.dto.FeeLevelStatsDTO;
+import application.dto.MemPoolPositionDTO;
+import application.dto.TransactionDTO;
 import application.dto.WalletDTO;
-import domain.entity.Wallet;
+import domain.enums.Priority;
 import domain.repository.WalletAddressGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import presentation.controller.MempoolController;
 import presentation.controller.TransactionController;
 import presentation.controller.WalletController;
 import infrastructure.strategy.BtcAddressGenerator;
 import infrastructure.strategy.EthAddressGenerator;
-import presentation.response.WalletCreationResponse;
+import presentation.response.*;
 import presentation.util.ConsoleInputReader;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-
 
 public class ConsoleUI {
 
@@ -23,14 +27,17 @@ public class ConsoleUI {
 
     private final WalletController walletController;
     private final TransactionController transactionController;
+    private final MempoolController mempoolController;
+    private final static String LINE = "+-------------+----------+--------------+------------------+%n";
 
     private final ConsoleInputReader inputReader;
 
     Map<String, WalletAddressGenerator> strategies = new HashMap<>();
 
-    public ConsoleUI(WalletController walletController, TransactionController transactionController) {
+    public ConsoleUI(WalletController walletController, TransactionController transactionController, MempoolController mempoolController) {
         this.walletController = walletController;
         this.transactionController = transactionController;
+        this.mempoolController = mempoolController;
         this.inputReader = new ConsoleInputReader();
 
         strategies.put("BITCOIN", new BtcAddressGenerator());
@@ -39,6 +46,7 @@ public class ConsoleUI {
 
     public void start() throws IllegalAccessException {
         int choice;
+        this.mempoolController.startCycle();
         do {
             welcomeMenu();
             choice = inputReader.getIntInput("Enter your choice: ");
@@ -59,7 +67,11 @@ public class ConsoleUI {
                 case 5:
                     checkMempool();
                     break;
+                case 6:
+                    exportCSV();
+                    break;
                 case 0:
+                    this.mempoolController.stopCycle();
                     System.out.println("Bye Bye ...");
                     break;
                 default:
@@ -76,6 +88,7 @@ public class ConsoleUI {
         System.out.println("3: Check my Position in memPool");
         System.out.println("4: Compare fees Levels");
         System.out.println("5: Check mempool stat");
+        System.out.println("6: Export MemPool Status on CSV");
         System.out.println("0: quit");
     }
 
@@ -104,42 +117,115 @@ public class ConsoleUI {
     }
 
     private void makeTransaction() {
-        // get the source(sender) address & destination(receiver) address
-        // Check if both Addresses exist,
+
+        // get the source(sender) address & destination(receiver) address, amount
+        String address = inputReader.getInput("Enter your Wallet Address: ");
+        String receiverAddress = inputReader.getInput("Enter Receiver Wallet Address: ");
+        BigDecimal amount = inputReader.getBigDecimalInput("Enter the Amount: ");
+
         // choose the level of the transaction (ECONOMIQUE, STANDARD, RAPID)
-        // based on the level Calculate the fees & set the Priority
+        Priority priority = Priority.valueOf(inputReader.getInput("Enter the Priority (ECONOMIQUE, STANDARD, RAPID): ").toUpperCase());
+
         // Call the Transaction Create controller Method
+        TransactionCreateResponse transactionCreateResponse = this.transactionController.create(address, receiverAddress, amount, priority);
+
         // receive a TransactionCreateResponse object
-
-        // service
-
-        //  receive the args from controller
-        // Transfer those args to DTO
-        // generate a UUID
-        // call the Transaction repository for the save
-        // call domain-service for both sender and receiver for consistency
-        // return database Resultset
-        // Map it to DTO again and return it back to controller
+        if(transactionCreateResponse.isSuccess()) {
+            System.out.println("Transaction created successfully!");
+            System.out.println("Transaction ID: " + transactionCreateResponse.getTransaction().getUuid());
+            System.out.println("Transaction Status: " + transactionCreateResponse.getTransaction().getStatus());
+            System.out.println("Transaction Fee: " + transactionCreateResponse.getTransaction().getFee());
+        } else {
+            logger.error("Transaction creation failed: {}", transactionCreateResponse.getErrorMessage());
+        }
     }
 
     private void myPositionInMemPool() {
-        // TODO: Ask for my Position in the Queue
-        // TODO: Calculate Postion based on the fais ( reverse the fees Calculation Formula)
-        // TODO: displya a message "Your Transaction is in Position (X, Y)"
-        // TODO: Estimate the time based on position
+
+        String transactionID = inputReader.getInput("Enter your Transaction ID ( uuid )  : ");
+
+        MemPoolPositionResponse memPoolPositionResponse = this.mempoolController.checkMyPosition(transactionID);
+
+        if(memPoolPositionResponse.isSuccess()) {
+            System.out.println("Your Position is Calculated SuccessFully");
+            System.out.printf("Your Position is %d on total %d%n",
+                    memPoolPositionResponse.getMemPoolPositionDTO().getMyCount(),
+                    memPoolPositionResponse.getMemPoolPositionDTO().getTotal());
+        } else {
+            logger.error("Failed to Verify your current Position in the MemPool: {}",  memPoolPositionResponse.getErrorMessage());
+        }
     }
 
+    // Don't Forget to Check the EST TIME & SEE how to Make Display Correctly
     private void feesLevelCompare() {
-        // TODO: Compare the 3 level of fees
-        // TODO: calculate the position in the mempool for each fees level
-        // TODO: display the cost & the speed
-        // TODO: display a table contain all those kind of information in concise way
+        FeesLevelStatResponse response = this.mempoolController.checkFeesLevel();
+
+        if(response.isSuccess()) {
+            if(response.getFeeLevelStatsDTOList().isEmpty()) {
+                logger.info("No Pending Transaction");
+                return;
+            }
+            ConsoleUI.printFeeLevelTable(response.getFeeLevelStatsDTOList());
+        } else {
+            System.err.println("Failed to Fetch the Fees Level Stats " + response.getErrorMessage());
+        }
     }
 
 
     private void checkMempool() {
-        // TODO: display a list of the transactions ( PENDING)
-        // TODO: display the feed for Each Transaction also
-        // TODO: Mention my Trasaction as display  ">>> Your TX : Wallet Address"
+        String myAddress = inputReader.getInput("Enter your Wallet address : ");
+        MemPoolStatusResponse response = this.mempoolController.checkMemPoolStatus();
+        if(response.isSuccess()) {
+            if(response.getTransactions().isEmpty()) {
+                logger.info("No Pending Transaction");
+                return;
+            }
+
+            ConsoleUI.printMemPoolStatusTable(response.getTransactions(), myAddress);
+         } else {
+            logger.error("Failed to Fetch the Fees Level Stats {} " , response.getErrorMessage());
+        }
+    }
+
+
+    private void exportCSV() {
+        logger.info("memStatus Exported");
+    }
+
+    public static void printMemPoolStatusTable(List<TransactionDTO> memPoolStatusDTO, String myAddress) {
+        String leftAlignFormat = "│ %-40s │ %-12s │%n";
+
+        System.out.format(LINE);
+        System.out.format("│ %-55s │ %-12s │%n", "Transaction (autres utilisateurs)", "Frais");
+        System.out.format(LINE);
+
+        for (TransactionDTO s : memPoolStatusDTO) {
+            String txLabel = s.getSource().equals(myAddress)
+                    ? ">>>> Your Tx : " + s.getUuid().toString()       // full UUID
+                    : ">>>> (Anonym) : " + s.getUuid().toString().substring(0, 8) + "************************";
+
+            System.out.format(leftAlignFormat, txLabel, s.getFee().toString());
+        }
+
+        System.out.format(LINE);
+    }
+
+    public static void printFeeLevelTable(List<FeeLevelStatsDTO> stats) {
+        String leftAlignFormat = "| %-11s | %-8d | %-12s | %-16s |%n";
+
+        System.out.format(LINE);
+        System.out.format("| Fee Level   | Position | Fees         | Est. Time (min)  |%n");
+        System.out.format(LINE);
+
+        for (FeeLevelStatsDTO s : stats) {
+            System.out.format(leftAlignFormat,
+                    s.getPriority(),
+                    s.getPosition(),
+                    s.getFees().toString(),
+                    s.getEst().toString()
+            );
+        }
+
+        System.out.format(LINE);
     }
 }
