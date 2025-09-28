@@ -65,6 +65,10 @@ public class TransactionService {
 
         if (senderWallet.isPresent() && receiverWallet.isPresent()) {
 
+            if(senderWallet.get().equals(receiverWallet.get())) {
+                throw new IllegalArgumentException("Can't make transaction to yourself");
+            }
+
             if(senderWallet.get().getBalance().compareTo(amount) < 0) {
                 throw new IllegalArgumentException("Insufficient Balance");
             }
