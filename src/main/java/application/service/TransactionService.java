@@ -45,6 +45,10 @@ public class TransactionService {
             throw new IllegalArgumentException("Address are not Exists : " + address + receiverAddress);
         }
 
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Invalid Amount");
+        }
+
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setSource(address);
         transactionDTO.setDestination(receiverAddress);
@@ -78,8 +82,6 @@ public class TransactionService {
 
 
             transaction = this.transactionRepository.save(newTransaction);
-
-
         }
 
         // call domain-service for both sender and receiver for consistency
