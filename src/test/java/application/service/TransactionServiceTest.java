@@ -150,7 +150,24 @@ class TransactionServiceTest {
 
     @Test
     void testCreateTransaction_WhenInsufficientBalance() {
-        // Implement test logic here
+        String senderAddress = "Sender123";
+        String receiverAddress = "Receiver456";
+        CryptoType type = CryptoType.BITCOIN;
+
+        Wallet senderWallet = createWallet(senderAddress, type, BigDecimal.ZERO);
+        Wallet receiverWallet = createWallet(receiverAddress, type, BigDecimal.ZERO);
+
+
+        when(walletRepository.isAddressExist(senderAddress)).thenReturn(true);
+        when(walletRepository.isAddressExist(receiverAddress)).thenReturn(true);
+        when(walletRepository.findByAddress(senderAddress)).thenReturn(Optional.of(senderWallet));
+        when(walletRepository.findByAddress(receiverAddress)).thenReturn(Optional.of(receiverWallet));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                transactionService.createTransaction(senderAddress, receiverAddress, new BigDecimal("10.50"), Priority.STANDARD),
+                "Insufficient Balance"
+                );
+
     }
 
     @Test
