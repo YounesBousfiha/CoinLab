@@ -172,7 +172,23 @@ class TransactionServiceTest {
 
     @Test
     void testTransactionToSameAddress() {
-        // Implement test logic here
+        String senderAddress = "Sender123";
+        String receiverAddress = "Receiver456";
+        BigDecimal amount = new BigDecimal("2.5");
+        CryptoType type = CryptoType.BITCOIN;
+
+        Wallet senderWallet = createWallet(senderAddress, type, BigDecimal.TEN);
+        Wallet receiverWallet = createWallet(receiverAddress, type, BigDecimal.ZERO);
+
+        when(walletRepository.isAddressExist(senderAddress)).thenReturn(true);
+        when(walletRepository.isAddressExist(receiverAddress)).thenReturn(true);
+        when(walletRepository.findByAddress(senderAddress)).thenReturn(Optional.of(senderWallet));
+        when(walletRepository.findByAddress(receiverAddress)).thenReturn(Optional.of(receiverWallet));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                transactionService.createTransaction(senderAddress, senderAddress, amount, Priority.STANDARD),
+                "Can't Make transaction to yourself"
+                );
     }
 
     private Wallet createWallet(String address, CryptoType type, BigDecimal balance) {
