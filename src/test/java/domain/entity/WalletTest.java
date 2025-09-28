@@ -1,7 +1,5 @@
 package domain.entity;
 
-
-import domain.entity.Wallet;
 import domain.enums.CryptoType;
 import org.junit.jupiter.api.Test;
 
@@ -11,11 +9,11 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WalletTest {
+class WalletTest {
 
 
     @Test
-    public void testConstructorWithArgs() {
+    void testConstructorWithArgs() {
         Wallet wallet = new Wallet(CryptoType.BITCOIN, "addr123");
         assertEquals(BigDecimal.ZERO, wallet.getBalance());
         assertEquals(CryptoType.BITCOIN, wallet.getType());
@@ -23,7 +21,7 @@ public class WalletTest {
     }
 
     @Test
-    public void testConstructorWithoutArgs() {
+    void testConstructorWithoutArgs() {
         Wallet wallet = new Wallet();
         assertEquals(BigDecimal.ZERO, wallet.getBalance());
         assertNull(wallet.getType());
@@ -31,7 +29,7 @@ public class WalletTest {
     }
 
     @Test
-    public void testGettersAndSetters() {
+    void testGettersAndSetters() {
         Wallet wallet = new Wallet();
         wallet.setId(1L);
         wallet.setBalance(new BigDecimal("100.50"));
@@ -48,7 +46,7 @@ public class WalletTest {
     }
 
     @Test
-    public void testSaveTransaction_success() throws Exception {
+    void testSaveTransaction_success() throws IllegalAccessException {
         Wallet wallet = new Wallet();
         wallet.setTransactionList(new ArrayList<>());
         Transaction tx = Transaction.builder().build();
@@ -59,7 +57,7 @@ public class WalletTest {
     }
 
     @Test
-    public void testSaveTransaction_throwWhenListInitialized() throws Exception {
+    void testSaveTransaction_throwWhenListInitialized() throws IllegalStateException {
         Wallet wallet = new Wallet();
         Transaction tx = Transaction.builder().build();
 
@@ -69,7 +67,7 @@ public class WalletTest {
     }
 
     @Test
-    public void testToStringContainFields() {
+    void testToStringContainFields() {
         Wallet wallet = new Wallet(CryptoType.ETHEREUM, "addr123");
         wallet.setId(42L);
         wallet.setBalance(new BigDecimal("100.50"));
