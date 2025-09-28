@@ -94,17 +94,58 @@ class TransactionServiceTest {
 
     @Test
     void testCreateTransaction_WalletNotFound() {
-        // Implement test logic here
+        String senderAddress = "sender123";
+        String receiverAddress = "receiver456";
+        BigDecimal amount = BigDecimal.TEN;
+        Priority priority = Priority.STANDARD;
+
+        when(walletRepository.isAddressExist(senderAddress)).thenReturn(false);
+        when(walletRepository.isAddressExist(receiverAddress)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () ->
+            transactionService.createTransaction(senderAddress, receiverAddress, amount, priority),
+           "Address are not Exist : " + senderAddress + receiverAddress);
     }
 
     @Test
     void testCreateTransaction_InvalidAmount() {
-        // Implement test logic here
+        String senderAddress = "sender123";
+        String receiverAddress = "receiver456";
+        BigDecimal amount = BigDecimal.valueOf(-10);
+        Priority priority = Priority.STANDARD;
+
+
+        when(walletRepository.isAddressExist(senderAddress)).thenReturn(true);
+        when(walletRepository.isAddressExist(receiverAddress)).thenReturn(true);
+
+
+        assertThrows(IllegalArgumentException.class, () ->
+                transactionService.createTransaction(senderAddress, receiverAddress, amount, priority),
+                "Invalid Amount"
+        );
+
     }
 
     @Test
     void testCreateTransaction_WhenWalletTypesDoNotMatch() {
-        // Implement test logic here
+        String senderAddress = "sender123";
+        String receiverAddress = "receiver456";
+        BigDecimal amount = BigDecimal.TEN;
+        Priority priority = Priority.STANDARD;
+
+        Wallet senderWallet = createWallet(senderAddress, CryptoType.BITCOIN, BigDecimal.TEN.multiply(BigDecimal.valueOf(10)));
+        Wallet receiverWallet = createWallet(receiverAddress, CryptoType.ETHEREUM, BigDecimal.ZERO);
+
+        when(walletRepository.isAddressExist(senderAddress)).thenReturn(true);
+        when(walletRepository.isAddressExist(receiverAddress)).thenReturn(true);
+        when(walletRepository.findByAddress(senderAddress)).thenReturn(Optional.of(senderWallet));
+        when(walletRepository.findByAddress(receiverAddress)).thenReturn(Optional.of(receiverWallet));
+
+
+        assertThrows(IllegalArgumentException.class, () ->
+                        transactionService.createTransaction(senderAddress, receiverAddress, amount, priority),
+                "Address Type are not match"
+        );
     }
 
     @Test
@@ -114,11 +155,6 @@ class TransactionServiceTest {
 
     @Test
     void testTransactionToSameAddress() {
-        // Implement test logic here
-    }
-
-    @Test
-    void testTransactionWithNegativeAmount() {
         // Implement test logic here
     }
 
