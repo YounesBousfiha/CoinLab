@@ -65,6 +65,10 @@ public class TransactionService {
 
         if (senderWallet.isPresent() && receiverWallet.isPresent()) {
 
+            if(senderWallet.get().getBalance().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("Insufficient Balance");
+            }
+
             String senderType = String.valueOf(extractWalletType(senderWallet.get()));
             String receiverType = String.valueOf(extractWalletType(receiverWallet.get()));
 
