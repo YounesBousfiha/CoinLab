@@ -92,7 +92,7 @@ public class TransactionService {
             transaction = this.transactionRepository.save(newTransaction);
         }
 
-        // call domain-service for both sender and receiver for consistency
+
 
         assert transaction != null;
         return TransactionMapper.toDTO(transaction);
