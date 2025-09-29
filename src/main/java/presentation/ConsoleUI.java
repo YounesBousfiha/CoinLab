@@ -189,7 +189,7 @@ public class ConsoleUI {
 
 
     private void exportCSV() {
-        logger.info("memStatus Exported");
+        this.transactionController.exportCSV();
     }
 
     public static void printMemPoolStatusTable(List<TransactionDTO> memPoolStatusDTO, String myAddress) {
