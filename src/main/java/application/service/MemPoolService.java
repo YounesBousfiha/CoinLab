@@ -73,12 +73,11 @@ public class MemPoolService {
 
         executorService.scheduleAtFixedRate(() -> {
             Optional<List<Transaction>> transactions = this.transactionRepository.findAllPendingWithLimit(LIMIT);
-            // logger.info("Transaction {}", transactions);
+            logger.info("Transaction {}", transactions);
             if (transactions.isPresent() && !transactions.get().isEmpty()) {
                 processTransactions(transactions.get());
-                /* saveTransactions(transactions.get()); */
             } else {
-               // logger.info("No pending transactions found in the mempool");
+               logger.info("No pending transactions found in the mempool");
             }
 
         }, 1000, CYCLE, TimeUnit.SECONDS);
@@ -96,18 +95,15 @@ public class MemPoolService {
     }
 
     private void processTransaction(Transaction transaction) {
-        //logger.info("Processing transaction: {} ", transaction);
+        logger.info("Processing transaction: {} ", transaction);
 
         // Get the Sender and Receiver Wallets
         Optional<Wallet> senderWallet = this.walletRepository.findByAddress(transaction.getSource());
         Optional<Wallet> receiverWallet = this.walletRepository.findByAddress(transaction.getDestination());
 
-        // logger.info("Sender {}", senderWallet);
-        // logger.info("Receiver {}", receiverWallet);
-
         // Improved wallet existence check with more explicit logging
         if (!senderWallet.isPresent() || !receiverWallet.isPresent()) {
-            transaction = transaction.builder()
+            transaction = Transaction.builder()
                     .id(transaction.getId())
                     .uuid(transaction.getUuid())
                     .source(transaction.getSource())
@@ -119,11 +115,6 @@ public class MemPoolService {
                     .createdAt(transaction.getCreatedAt())
                     .build();
 
-            /* logger.warn("Transaction rejected: {} - Wallet not found. Sender present: {}, Receiver present: {}",
-                    transaction.getUuid(),
-                    senderWallet.isPresent(),
-                    receiverWallet.isPresent()); */
-
             this.transactionRepository.save(transaction);
             return;
         }
@@ -133,7 +124,7 @@ public class MemPoolService {
 
         // Check Sufficient balance
         if (sender.getBalance().compareTo(transaction.getAmount().add(transaction.getFee())) < 0) {
-            transaction = transaction.builder()
+            transaction = Transaction.builder()
                     .id(transaction.getId())
                     .uuid(transaction.getUuid())
                     .source(transaction.getSource())
@@ -156,7 +147,7 @@ public class MemPoolService {
         // Check the Fee Threshold
         BigDecimal limit = thresholds.get(sender.getType());
         if (limit.compareTo(transaction.getFee()) < 0) {
-            transaction = transaction.builder()
+            transaction = Transaction.builder()
                     .status(Status.REJECTED)
                     .build();
 
@@ -170,7 +161,7 @@ public class MemPoolService {
         }
 
         // If all checks pass, confirm the transaction
-        transaction = transaction.builder()
+        transaction = Transaction.builder()
                 .id(transaction.getId())
                 .uuid(transaction.getUuid())
                 .source(transaction.getSource())
@@ -213,7 +204,7 @@ public class MemPoolService {
 
 
     // Check my mempool Position
-    public MemPoolPositionDTO MemPoolPosition(String transactionID) {
+    public MemPoolPositionDTO memPoolPosition(String transactionID) {
         Optional<List<Transaction>> optionalTransactions = transactionRepository.findAllPending();
         List<Transaction> pendingTransactions = optionalTransactions.orElse(Collections.emptyList());
 
@@ -239,9 +230,6 @@ public class MemPoolService {
                 break;
             }
         }
-
-        // int myCount = (myPosition == - 1) ? 0 : 1;
-
 
         // this should Return DTO Objet
         return new MemPoolPositionDTO(transactionID, total, myPosition);
