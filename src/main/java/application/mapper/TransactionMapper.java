@@ -2,9 +2,6 @@ package application.mapper;
 
 import application.dto.TransactionDTO;
 import domain.entity.Transaction;
-import domain.enums.Priority;
-
-import java.math.BigDecimal;
 
 public class TransactionMapper {
 
