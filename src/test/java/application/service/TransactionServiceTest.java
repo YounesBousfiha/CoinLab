@@ -8,6 +8,7 @@ import domain.enums.Priority;
 import domain.enums.Status;
 import domain.repository.MempoolRepository;
 import domain.repository.WalletRepository;
+import infrastructure.exports.ExportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -30,9 +31,6 @@ class TransactionServiceTest {
     @Mock
     private WalletRepository walletRepository;
 
-    @Mock
-    private MempoolRepository mempoolRepository;
-
     private TransactionService transactionService;
 
 
@@ -41,8 +39,7 @@ class TransactionServiceTest {
         MockitoAnnotations.openMocks(this);
         transactionService = new TransactionService(
                 transactionRepository,
-                walletRepository,
-                mempoolRepository
+                walletRepository
         );
     }
 
