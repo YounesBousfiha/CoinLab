@@ -2,7 +2,6 @@ package application.dto;
 
 import domain.enums.Priority;
 import domain.enums.Status;
-import presentation.response.TransactionCreateResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
