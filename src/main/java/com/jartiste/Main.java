@@ -8,6 +8,9 @@ import domain.repository.TransactionRepository;
 import domain.repository.WalletRepository;
 import infrastructure.config.Database;
 import infrastructure.config.GlobalValue;
+import infrastructure.exports.CSVExporter;
+import infrastructure.exports.ExportService;
+import infrastructure.exports.ExportService;
 import infrastructure.persistance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,15 +66,16 @@ class ApplicationContext {
     private static ConsoleUI getConsoleUI(boolean useDatabase, Connection db) {
         WalletRepository walletRepository =  useDatabase ? new WalletRepoImpl(db) : new WalletMemRepoImpl();
         TransactionRepository transactionRepository = useDatabase ? new TransactionRepoImpl(db) : new TransactionMemRepoImpl();
-        MempoolRepository mempoolRepository = useDatabase ? new MemPoolImpl(db) : new MemPoolMemoImpl();
         MemPoolService memPoolService = new MemPoolService(transactionRepository, walletRepository);
 
-
         WalletService walletService = new WalletService(walletRepository);
-        TransactionService transactionService = new TransactionService(transactionRepository, walletRepository, mempoolRepository);
+        TransactionService transactionService = new TransactionService(transactionRepository, walletRepository);
+
+        CSVExporter csvExporter = new CSVExporter();
+        ExportService exportService = new ExportService(transactionService, csvExporter);
 
         WalletController walletController = new WalletController(walletService);
-        TransactionController transactionController = new TransactionController(transactionService);
+        TransactionController transactionController = new TransactionController(transactionService, exportService);
         MempoolController mempoolController = new MempoolController(memPoolService);
 
         return new ConsoleUI(walletController, transactionController, mempoolController);
