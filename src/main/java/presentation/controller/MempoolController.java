@@ -30,7 +30,7 @@ public class MempoolController {
     // argument: walletAddress
     public MemPoolPositionResponse checkMyPosition(String transactionID) {
         // take the arg
-        MemPoolPositionDTO memPoolPositionDTO = this.memPoolService.MemPoolPosition(transactionID);
+        MemPoolPositionDTO memPoolPositionDTO = this.memPoolService.memPoolPosition(transactionID);
         if(memPoolPositionDTO == null) {
             return  MemPoolPositionResponse.failure("No Pending Transaction in the MemPool");
         }
