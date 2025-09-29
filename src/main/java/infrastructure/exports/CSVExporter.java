@@ -15,7 +15,9 @@ import java.util.List;
 public class CSVExporter {
     private  final Logger logger = LoggerFactory.getLogger(CSVExporter.class);
 
-    public CSVExporter() {}
+    public CSVExporter() {
+        /* init a empty class to make easy for DI */
+    }
 
 
     public void export(List<TransactionDTO> transactions, String filePath) throws IOException {
@@ -30,7 +32,6 @@ public class CSVExporter {
             String[] header = Arrays.stream(fields)
                     .map(Field::getName)
                     .toArray(String[]::new);
-            logger.debug(Arrays.toString(header));
             writer.writeNext(header);
 
 
