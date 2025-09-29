@@ -116,7 +116,8 @@ public class TransactionRepoImpl implements TransactionRepository {
 
     @Override
     public Optional<List<Transaction>> findAllTransactions() {
-        String sql = "SELECT * FROM transaction";
+        String sql = "SELECT * " +
+                "FROM transaction";
         
         try (Statement stmt = db.createStatement();
              ResultSet rs = stmt.executeQuery(sql)
