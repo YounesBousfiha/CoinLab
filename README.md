@@ -4,6 +4,8 @@
 ## Overview
 CoinLab is a sophisticated Java application designed for financial transaction management and data processing. The project leverages modern Java technologies and follows clean architecture principles.
 
+![App Screenshot](CoinLab.png)
+
 ## 🚀 Features
 - Transaction management
 - CSV data export
