@@ -6,7 +6,6 @@ import domain.entity.Wallet;
 import domain.enums.CryptoType;
 import domain.enums.Priority;
 import domain.enums.Status;
-import domain.repository.MempoolRepository;
 import domain.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +29,6 @@ class TransactionServiceTest {
     @Mock
     private WalletRepository walletRepository;
 
-    @Mock
-    private MempoolRepository mempoolRepository;
-
     private TransactionService transactionService;
 
 
@@ -41,8 +37,7 @@ class TransactionServiceTest {
         MockitoAnnotations.openMocks(this);
         transactionService = new TransactionService(
                 transactionRepository,
-                walletRepository,
-                mempoolRepository
+                walletRepository
         );
     }
 

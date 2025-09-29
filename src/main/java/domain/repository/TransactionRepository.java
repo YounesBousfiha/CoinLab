@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface TransactionRepository {
     public Transaction save(Transaction transaction);
     Optional<List<Transaction>> findAllByWalletId(UUID walletId);
-    int countPending(); // for mempool service
+    Optional<List<Transaction>> findAllTransactions(); // for mempool service
     Optional<List<Transaction>> findAllPending(); // for mempool service
     Optional<List<Transaction>> findAllPendingWithLimit(int limit);
     Optional<List<FeeLevelStatsDTO>>  getFeeLevelStatistics(int limit, int cycleTime);
