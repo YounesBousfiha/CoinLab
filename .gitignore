@@ -31,3 +31,9 @@ bin/
 ### ENV ###
 .env
 src/.env
+*.class
+*.ir
+*.udg
+*.proto
+*.txt
+.scannerwork

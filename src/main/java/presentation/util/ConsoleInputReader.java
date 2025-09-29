@@ -18,8 +18,7 @@ public class ConsoleInputReader {
 
     public int getIntInput(String prompt) {
         System.out.print(prompt);
-        int input = scanner.nextInt();
-        scanner.nextLine();
+        int input = Integer.parseInt(scanner.nextLine().trim());
         return input;
     }
 

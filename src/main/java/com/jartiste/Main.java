@@ -1,3 +1,5 @@
+package com.jartiste;
+
 import application.service.MemPoolService;
 import application.service.TransactionService;
 import application.service.WalletService;
@@ -20,14 +22,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) throws IllegalAccessException {
+    public static void main(String[] args) throws IllegalAccessException, SQLException {
             CoinLab app = new CoinLab();
             app.start();
     }
 }
 
 class CoinLab {
-    public void start() throws IllegalAccessException {
+    public void start() throws IllegalAccessException, SQLException {
         ApplicationContext  context = ApplicationContext.create();
         ConsoleUI ui = context.getBean(ConsoleUI.class);
         ui.start();
@@ -37,21 +39,20 @@ class CoinLab {
 class ApplicationContext {
     private final Map<Class<?>, Object> beans = new HashMap<>();
 
-    private final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
-    public static ApplicationContext create() {
+    public static ApplicationContext create() throws SQLException {
         ApplicationContext context = new ApplicationContext();
         context.initialize();
+        logger.info("Context Initialized");
         return context;
     }
 
-    private void initialize() {
+    private void initialize() throws SQLException {
         boolean useDatabase = GlobalValue.USE_DATABASE;
-        Connection db = null;
-        try {
-            db = Database.getInstance().getConnection();
-        } catch (SQLException e) {
-            logger.error("Error in Database Getting Instance");
+        Connection db = Database.getInstance().getConnection();
+        if (db == null) {
+            throw new IllegalStateException("Database connection could not be established");
         }
 
         ConsoleUI ui = getConsoleUI(useDatabase, db);

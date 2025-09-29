@@ -45,6 +45,10 @@ public class TransactionService {
             throw new IllegalArgumentException("Address are not Exists : " + address + receiverAddress);
         }
 
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Invalid Amount");
+        }
+
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setSource(address);
         transactionDTO.setDestination(receiverAddress);
@@ -60,6 +64,14 @@ public class TransactionService {
         Transaction transaction = null;
 
         if (senderWallet.isPresent() && receiverWallet.isPresent()) {
+
+            if(senderWallet.get().equals(receiverWallet.get())) {
+                throw new IllegalArgumentException("Can't make transaction to yourself");
+            }
+
+            if(senderWallet.get().getBalance().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("Insufficient Balance");
+            }
 
             String senderType = String.valueOf(extractWalletType(senderWallet.get()));
             String receiverType = String.valueOf(extractWalletType(receiverWallet.get()));
@@ -78,8 +90,6 @@ public class TransactionService {
 
 
             transaction = this.transactionRepository.save(newTransaction);
-
-
         }
 
         // call domain-service for both sender and receiver for consistency
