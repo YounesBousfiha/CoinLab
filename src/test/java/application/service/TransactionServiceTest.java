@@ -69,7 +69,6 @@ class TransactionServiceTest {
 
         TransactionDTO result = transactionService.createTransaction(senderAddress, receiverAddress, amount, priority);
 
-        System.out.println(result);
 
         assertNotNull(result);
         assertEquals(senderAddress, result.getSource());
