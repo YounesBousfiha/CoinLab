@@ -198,6 +198,7 @@ public class MemPoolService {
             } catch (InterruptedException e) {
                 executorService.shutdownNow();
                 logger.info("Periodic Refresh Stop !");
+                Thread.currentThread().interrupt();
             }
         }
     }
