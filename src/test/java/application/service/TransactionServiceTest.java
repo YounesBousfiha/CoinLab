@@ -6,11 +6,8 @@ import domain.entity.Wallet;
 import domain.enums.CryptoType;
 import domain.enums.Priority;
 import domain.enums.Status;
-import domain.repository.FeeCalculationStrategy;
 import domain.repository.MempoolRepository;
 import domain.repository.WalletRepository;
-import infrastructure.strategy.BitcoinFeeStrategy;
-import infrastructure.strategy.EthereumFeeStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,14 +15,11 @@ import domain.repository.TransactionRepository;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.spy;
 
 class TransactionServiceTest {
 
@@ -83,7 +77,6 @@ class TransactionServiceTest {
         assertEquals(amount, result.getAmount());
         assertEquals(Status.PENDING, result.getStatus());
         assertNotNull(result.getUuid());
-        // assertNotNull(result.getFee());
 
 
 
