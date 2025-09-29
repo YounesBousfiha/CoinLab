@@ -1,8 +1,6 @@
 package presentation.response;
 
 import application.dto.TransactionDTO;
-import domain.entity.Transaction;
-
 import java.util.List;
 
 public class ExportResponse {
