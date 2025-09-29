@@ -20,18 +20,8 @@ public class TransactionDTO {
     private  Status status;
     private  LocalDateTime createdAt;
 
-    public TransactionDTO() {}
-
-    public TransactionDTO(Long id, UUID uuid, String source, String destination, BigDecimal amount, BigDecimal fee, Priority priority, Status status, LocalDateTime createdAt) {
-        this.id = id;
-        this.uuid = uuid;
-        this.source = source;
-        this.destination = destination;
-        this.amount = amount;
-        this.fee = fee;
-        this.priority = priority;
-        this.status = status;
-        this.createdAt = createdAt;
+    public TransactionDTO() {
+        /* init empty Class  */
     }
 
 
