@@ -8,10 +8,7 @@ import domain.enums.Priority;
 import domain.enums.Status;
 import domain.repository.TransactionRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -118,21 +115,37 @@ public class TransactionRepoImpl implements TransactionRepository {
     }
 
     @Override
-    public int countPending() {
-        String sql = " SELECT COUNT(*) FROM transaction WHERE status = 'PENDING'";
+    public Optional<List<Transaction>> findAllTransactions() {
+        String sql = "SELECT * FROM transaction";
+        
+        try (Statement stmt = db.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)
+        ) {
+            List<Transaction> transactions = new ArrayList<>();
+            while(rs.next()) {
+                Transaction tx = Transaction.builder()
+                        .id(rs.getLong(ID_COLUMN))
+                        .uuid(UUID.fromString(rs.getString(UUID_COLUMN)))
+                        .source(rs.getString(SOURCE_COLUMN))
+                        .destination(rs.getString(DEST_COLUMN))
+                        .amount(rs.getBigDecimal(AMOUNT_COLUMN))
+                        .fee(rs.getBigDecimal(FEE_COLUMN))
+                        .priority(Priority.valueOf(rs.getString(PRIORITY_COLUMN)))
+                        .status(Status.valueOf(rs.getString(STATUS_COLUMN)))
+                        .createdAt(rs.getTimestamp(CREATED_AT_COLUMN).toLocalDateTime())
+                        .build();
 
-        try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                logger.debug("Pending transaction count : {}", count);
-                return count;
+                transactions.add(tx);
             }
-        } catch (SQLException e) {
-            logger.error("Error counting pending transaction", e);
+
+            return transactions.isEmpty() ?
+                    Optional.empty() :
+                    Optional.of(transactions);
+        }  catch (SQLException e) {
+                logger.error("Failed to Fetch All Transaction : ", e);
         }
-        return 0;
+
+        return Optional.empty();
     }
 
     @Override

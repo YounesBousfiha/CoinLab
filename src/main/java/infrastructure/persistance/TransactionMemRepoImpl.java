@@ -20,8 +20,8 @@ public class TransactionMemRepoImpl implements TransactionRepository {
     }
 
     @Override
-    public int countPending() {
-        return 0;
+    public Optional<List<Transaction>> findAllTransactions() {
+        return Optional.empty();
     }
 
     @Override

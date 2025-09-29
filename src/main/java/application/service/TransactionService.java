@@ -11,27 +11,27 @@ import domain.repository.FeeCalculationStrategy;
 import domain.repository.MempoolRepository;
 import domain.repository.TransactionRepository;
 import domain.repository.WalletRepository;
+import infrastructure.exports.ExportService;
 import infrastructure.strategy.BitcoinFeeStrategy;
 import infrastructure.strategy.EthereumFeeStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TransactionService {
 
 
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
-    private final MempoolRepository mempoolRepository;
+    private final Logger logger = LoggerFactory.getLogger(TransactionService.class);
     private final Map<String, FeeCalculationStrategy> strategies = new HashMap<>();
 
-    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository, MempoolRepository mempoolRepository) {
+    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository) {
         this.transactionRepository = transactionRepository;
         this.walletRepository = walletRepository;
-        this.mempoolRepository = mempoolRepository;
 
         strategies.put("BITCOIN", new BitcoinFeeStrategy());
         strategies.put("ETHEREUM", new EthereumFeeStrategy());
@@ -101,5 +101,24 @@ public class TransactionService {
 
     private CryptoType extractWalletType(Wallet wallet) {
           return wallet.getType();
+    }
+
+    public List<TransactionDTO> getAllTransaction() {
+        try {
+            Optional<List<Transaction>> transactions = this.transactionRepository.findAllTransactions();
+            List<TransactionDTO> transactionDTOS = new ArrayList<>();
+
+            if(transactions.isPresent()) {
+                transactionDTOS = transactions.get().stream()
+                        .map(TransactionMapper::toDTO)
+                        .collect(Collectors.toList());
+            }
+
+            return transactionDTOS;
+        } catch (Exception e) {
+           logger.error("Error Happen in getAllTransaction service : ", e);
+        }
+
+        return Collections.emptyList();
     }
 }
