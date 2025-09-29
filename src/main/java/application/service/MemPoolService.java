@@ -20,13 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 public class MemPoolService {
 
-    private final static int LIMIT = 3;
-    private final static int CYCLE = 1200;
+    private static final  int LIMIT = 3;
+    private static final int CYCLE = 1200;
     private final Logger logger = LoggerFactory.getLogger(MemPoolService.class);
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
     private final Map<CryptoType, BigDecimal> thresholds = new HashMap<>();
-    private PriorityQueue<Transaction> mempool;
+    private final PriorityQueue<Transaction> mempool;
 
     private ScheduledExecutorService executorService;
 
