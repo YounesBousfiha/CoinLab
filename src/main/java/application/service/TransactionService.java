@@ -98,6 +98,18 @@ public class TransactionService {
         return TransactionMapper.toDTO(transaction);
     }
 
+    public BigDecimal getTotalFessPerWallet(String address) {
+        Optional<List<Transaction>> transactions = transactionRepository.finTransactionByWallet(address);
+        if(transactions.isPresent()) {
+            return transactions.get().stream()
+                    .map(Transaction::getFee)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+           logger.error("No transactions found for wallet : {}", address);
+           return BigDecimal.ZERO;
+        }
+    }
+
 
     private CryptoType extractWalletType(Wallet wallet) {
           return wallet.getType();

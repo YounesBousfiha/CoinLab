@@ -229,7 +229,6 @@ public class TransactionRepoImpl implements TransactionRepository {
         }
     }
 
-
     public Optional<List<FeeLevelStatsDTO>>  getFeeLevelStatistics(int limit, int cycleTime) {
         String sql = "SELECT " +
                 "priority, " +
@@ -262,6 +261,42 @@ public class TransactionRepoImpl implements TransactionRepository {
                     : Optional.of(feeLevelStats);
         } catch (SQLException e) {
             logger.error("Error: Couldn't get Fee Level Statistics: {}", e);
+            return Optional.empty();
+        }
+    }
+
+
+    public Optional<List<Transaction>> finTransactionByWallet(String address) {
+        String sql = "SELECT * FROM" +
+                " transaction WHERE source = ?";
+
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setString(1, address);
+
+            List<Transaction> transactions = new ArrayList<>();
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Transaction transaction = Transaction.builder()
+                        .id(rs.getLong(ID_COLUMN))
+                        .uuid(UUID.fromString(rs.getString(UUID_COLUMN)))
+                        .source(rs.getString(SOURCE_COLUMN))
+                        .destination(rs.getString(DEST_COLUMN))
+                        .amount(rs.getBigDecimal(AMOUNT_COLUMN))
+                        .fee(rs.getBigDecimal(FEE_COLUMN))
+                        .priority(Priority.valueOf(rs.getString(PRIORITY_COLUMN)))
+                        .status(Status.valueOf(rs.getString(STATUS_COLUMN)))
+                        .createdAt(rs.getTimestamp(CREATED_AT_COLUMN).toLocalDateTime())
+                        .build();
+
+                transactions.add(transaction);
+            }
+            return transactions.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(transactions);
+
+        } catch (SQLException e) {
+            logger.error("Couldn't fetch Transaction per Wallet", e);
             return Optional.empty();
         }
     }

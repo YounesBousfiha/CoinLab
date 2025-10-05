@@ -34,6 +34,10 @@ public class TransactionController {
 
     }
 
+    public BigDecimal getTotalFessPerWallet(String address) {
+        return transactionService.getTotalFessPerWallet(address);
+    }
+
     public void exportCSV() {
         try {
             exportService.exportTransactionsToCSV();

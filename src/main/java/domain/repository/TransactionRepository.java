@@ -14,5 +14,6 @@ public interface TransactionRepository {
     Optional<List<Transaction>> findAllPending(); // for mempool service
     Optional<List<Transaction>> findAllPendingWithLimit(int limit);
     Optional<List<FeeLevelStatsDTO>>  getFeeLevelStatistics(int limit, int cycleTime);
+    Optional<List<Transaction>> finTransactionByWallet(String address);
 
 }
